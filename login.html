@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #76885b;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden; /* Hide overflow to prevent scrolling */
+            position: relative;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1; /* Ensure the container is above the leaves */
+            background-color: rgba(255, 255, 255, 0.6);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            padding: 40px;
+            width: 400px;
+            max-width: 90%;
+            text-align: center;
+            opacity: 0; /* Initial opacity set to 0 */
+            animation: fadeIn 1s ease forwards; /* Fade in animation */
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(-50px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo {
+            color: #627254;
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .typing-animation {
+            overflow: hidden;
+            white-space: nowrap;
+            margin-bottom: 20px;
+            animation: typing 3s steps(40, end) forwards;
+        }
+
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="email"],
+        input[type="submit"] {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: none;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+            background-color: rgba(255, 255, 255, 0.9);
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        input[type="email"]:focus {
+            outline: none;
+            background-color: rgba(255, 255, 255, 0.95);
+        }
+
+        input[type="submit"] {
+            background-color: #76885b;
+            color: #fff;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #627254;
+        }
+
+        .toggle-btn {
+            background-color: transparent;
+            border: none;
+            color: #627254;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: underline;
+            margin-bottom: 20px;
+            transition: color 0.3s ease;
+        }
+
+        .toggle-btn:hover {
+            color: #76885b;
+        }
+
+        .login-form {
+            display: block;
+        }
+
+        .signup-form {
+            display: none;
+        }
+
+        .show-signup .login-form {
+            display: none;
+        }
+
+        .show-signup .signup-form {
+            display: block;
+        }
+
+        /* Leaf animation */
+        .leaf {
+            position: absolute;
+            top: 0;
+            left: -200px; /* Initially position the leaf outside the viewport */
+            width: 100px; /* Adjust leaf size as needed */
+            height: 100px; /* Adjust leaf size as needed */
+            background-image: url('leaf.png'); /* Replace 'leaf.png' with your leaf image */
+            background-size: cover;
+            animation: animateLeaf 10s linear infinite;
+            z-index: 0; /* Ensure the leaf is behind the container */
+        }
+
+        @keyframes animateLeaf {
+            0% { transform: translate(-50%, -50%) rotate(0deg); opacity: 0; left: -200px; }
+            50% { transform: translate(150%, -50%) rotate(180deg); opacity: 1; }
+            100% { transform: translate(300%, -50%) rotate(360deg); opacity: 0; left: calc(100vw + 200px); }
+        }
+    </style>
+</head>
+</style>
+<body>
+    <div class="container">
+        <h2>Welcome Back!</h2>
+        <form class="login-form" action="/login" method="POST">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <input type="submit" value="Login">
+        </form>
+        <form class="signup-form" action="/signup" method="POST">
+            <input type="text" name="fullname" placeholder="Full Name" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <input type="password" name="confirm_password" placeholder="Confirm Password" required>
+            <input type="submit" value="Sign Up">
+        </form>
+        <p class="signup-line">Don't have an account? <button class="toggle-btn" onclick="toggleForm()">Sign up</button></p>
+    </div>
+    <script>
+        function toggleForm() {
+            var container = document.querySelector('.container');
+            container.classList.toggle('show-signup');
+            var welcomeHeading = document.getElementById('welcome-heading');
+            welcomeHeading.style.display = container.classList.contains('show-signup') ? 'none' : 'block';
+        }
+    </script>
+</body>
+</html>

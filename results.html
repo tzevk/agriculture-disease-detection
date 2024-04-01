@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Results</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        #chatbot-widget {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 300px;
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+#chat-window {
+    height: 200px;
+    overflow-y: scroll;
+    padding: 10px;
+}
+
+#user-input {
+    width: calc(100% - 20px);
+    padding: 10px;
+    border: none;
+    border-top: 1px solid #ccc;
+    outline: none;
+}
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #EEE;
+            overflow-x: hidden; /* Prevent horizontal scrollbar */
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -200px; /* Initially hide the sidebar */
+            width: 200px;
+            height: 100vh;
+            background-color: #627254;
+            color: #DDD;
+            padding: 20px;
+            box-sizing: border-box;
+            transition: left 0.3s ease; /* Slide animation */
+            z-index: 1;
+            overflow-y: auto; /* Add scrollbar if content overflows */
+            overflow-x: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
+            display: flex;
+            flex-direction: column;/* Center menu items vertically */
+        }
+
+        .content {
+            margin-left: 20px;
+            padding: 20px;
+            background-color: #f2f2f2;
+            border-radius: 10px;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .sidebar.open {
+            left: 0; /* Slide in the sidebar */
+        }
+
+        .sidebar-toggle {
+            position: fixed;
+            top: 50%; /* Center vertically */
+            left: 0; /* Initially align with left edge */
+            transform: translateY(-50%); /* Adjust for vertical centering */
+            width: 30px;
+            height: 30px;
+            background-color: #627254;
+            color: #DDD;
+            line-height: 30px;
+            cursor: pointer;
+            border-radius: 50%; /* Make toggle button round */
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
+            transition: transform 0.3s ease, left 0.3s ease; /* Smooth animation */
+            z-index: 2; /* Ensure the toggle button appears above the sidebar */
+        }
+
+        .sidebar-toggle:hover {
+            background-color: #76885B; /* Change color on hover */
+        }
+
+        .sidebar-toggle i {
+            transform: rotate(0deg); /* Initial rotation for arrow */
+            transition: transform 0.3s ease; /* Smooth animation for arrow */
+        }
+
+        .sidebar.open .sidebar-toggle i {
+            transform: rotate(180deg); /* Rotate arrow when sidebar is open */
+        }
+
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0; /* Remove default margin */
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Center horizontally */
+        }
+
+        .sidebar li {
+            margin-bottom: 10px;
+            transition: transform 0.3s ease; /* Add smooth animation */
+        }
+
+        .sidebar a {
+            color: #DDD;
+            text-decoration: none;
+            transition: color 0.3s ease; /* Smooth transition for link color */
+            display: block; /* Make the entire area clickable */
+            padding: 10px; /* Add padding for better clickability */
+            border-radius: 5px; /* Add rounded corners */
+        }
+
+        .sidebar a:hover {
+            color: #FFF; /* Change color on hover */
+            background-color: #76885B; /* Add background color on hover */
+        }
+
+        .content {
+            margin-left: 0; /* Initially content starts from left edge */
+            padding: 20px;
+            transition: margin-left 0.3s ease; /* Slide content when sidebar opens */
+            z-index: 0; /* Ensure content appears behind the sidebar */
+        }
+
+        .sidebar.open + .content {
+            margin-left: 200px; /* Slide content when sidebar opens */
+        }
+
+        h1 {
+            color: #627254; /* Match heading color with sidebar */
+        }
+
+        .error-message {
+            color: red;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .search-form {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .search-form input[type="text"] {
+            padding: 10px;
+            width: 300px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-right: 10px;
+        }
+
+        .search-form button[type="submit"] {
+            padding: 10px 20px;
+            background-color: #627254;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .search-form button[type="submit"]:hover {
+            background-color: #76885b;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-toggle" onclick="toggleSidebar()">
+            <i class="fas fa-chevron-right"></i>
+        </div>
+        <ul>
+            <br><br>
+            <br><br><br><br><br>
+            <li><a href="{{ url_for('home') }}">Home</a></li>
+            <li><a href="{{ url_for('user_page') }}">User Page</a></li>
+            <li><a href="{{ url_for('recent_uploads') }}">Recent Uploads</a></li>
+            <li><a href="{{ url_for('results') }}">Results</a></li>
+            <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+            <li><a href="{{ url_for('logout') }}">Sign Out</a></li>
+        </ul>
+    </div>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-toggle" onclick="toggleSidebar()">
+            <i class="fas fa-chevron-right"></i>
+        </div>
+    <div class="content">
+            <h1>Results</h1>
+            <form action="/results" method="POST" class="search-form">
+                <input type="text" name="search_query" placeholder="Search by name">
+                <button type="submit">Search</button>
+            </form>
+            <div id="chatbot-widget">
+                <div id="chat-window"></div>
+                <input type="text" id="user-input" placeholder="Type your message here...">
+            </div>
+            
+            {% if error %}
+            <p class="error-message">{{ error }}</p>
+            {% endif %}
+            
+            {% if result_images %}
+            <h2>Search Results</h2>
+            <div class="image-results">
+                {% for result_image in result_images %}
+                <div class="image-result">
+                    <h3>{{ result_image.name }}</h3>
+                    <img src="data:image/png;base64, {{ result_image.image }}" alt="{{ result_image.name }}">
+                    <!-- Add any additional information about the image -->
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        
+        {% if error %}
+        <p class="error-message">{{ error }}</p>
+        {% endif %}
+        
+    </div>
+
+    <!-- JavaScript for toggling sidebar -->
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
+        }
+    </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
+    
+</body>
+</html>

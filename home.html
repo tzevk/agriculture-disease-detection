@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome, {{ username }}!</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        /* Chatbot Widget Styles */
+#chatbot-widget {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 300px;
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+#chat-window {
+    height: 200px;
+    overflow-y: scroll;
+    padding: 10px;
+}
+
+#user-input {
+    width: calc(100% - 20px);
+    padding: 10px;
+    border: none;
+    border-top: 1px solid #ccc;
+    outline: none;
+}
+
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #EEE;
+            overflow-x: hidden; /* Prevent horizontal scrollbar */
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -200px; /* Initially hide the sidebar */
+            width: 200px;
+            height: 100vh;
+            background-color: #627254;
+            color: #DDD;
+            padding: 20px;
+            box-sizing: border-box;
+            transition: left 0.3s ease; /* Slide animation */
+            z-index: 1;
+            overflow-y: auto; /* Add scrollbar if content overflows */
+            overflow-x: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
+        }
+
+        .content {
+    margin-left: 20px;
+    padding: 20px;
+    background-color: #f2f2f2;
+    border-radius: 10px;
+}
+
+h1 {
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.upload-form {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button[type="submit"] {
+    background-color: #76885b;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button[type="submit"]:hover {
+    background-color: #76885b;
+}
+
+
+        .sidebar.open {
+            left: 0; /* Slide in the sidebar */
+        }
+
+        .sidebar-toggle {
+            position: fixed;
+            top: 50%; /* Center vertically */
+            left: 0; /* Initially align with left edge */
+            transform: translateY(-50%); /* Adjust for vertical centering */
+            width: 30px;
+            height: 30px;
+            background-color: #627254;
+            color: #DDD;
+            line-height: 30px;
+            cursor: pointer;
+            border-radius: 50%; /* Make toggle button round */
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
+            transition: transform 0.3s ease, left 0.3s ease; /* Smooth animation */
+            z-index: 2; /* Ensure the toggle button appears above the sidebar */
+        }
+
+        .sidebar-toggle:hover {
+            background-color: #76885B; /* Change color on hover */
+        }
+
+        .sidebar-toggle i {
+            transform: rotate(0deg); /* Initial rotation for arrow */
+            transition: transform 0.3s ease; /* Smooth animation for arrow */
+        }
+
+        .sidebar.open .sidebar-toggle i {
+            transform: rotate(180deg); /* Rotate arrow when sidebar is open */
+        }
+
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0; /* Remove default margin */
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Center horizontally */
+        }
+
+        .sidebar li {
+            margin-bottom: 10px;
+            transition: transform 0.3s ease; /* Add smooth animation */
+        }
+
+        .sidebar a {
+            color: #DDD;
+            text-decoration: none;
+            transition: color 0.3s ease; /* Smooth transition for link color */
+            display: block; /* Make the entire area clickable */
+            padding: 10px; /* Add padding for better clickability */
+            border-radius: 5px; /* Add rounded corners */
+        }
+
+        .sidebar a:hover {
+            color: #FFF; /* Change color on hover */
+            background-color: #76885B; /* Add background color on hover */
+        }
+
+        .content {
+            margin-left: 0; /* Initially content starts from left edge */
+            padding: 20px;
+            transition: margin-left 0.3s ease; /* Slide content when sidebar opens */
+            z-index: 0; /* Ensure content appears behind the sidebar */
+        }
+
+        .sidebar.open + .content {
+            margin-left: 200px; /* Slide content when sidebar opens */
+        }
+
+        h1 {
+            color: #627254; /* Match heading color with sidebar */
+            text-align: center;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-toggle" onclick="toggleSidebar()">
+            <i class="fas fa-chevron-right"></i>
+        </div>
+        <ul>
+            <br><br>
+            <br><br><br><br><br>
+            <li><a href="{{ url_for('home') }}">Home</a></li>
+            <li><a href="{{ url_for('user_page') }}">User Page</a></li>
+            <li><a href="{{ url_for('recent_uploads') }}">Recent Uploads</a></li>
+            <li><a href="{{ url_for('results') }}">Results</a></li>
+            <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+            <li><a href="{{ url_for('logout') }}">Sign Out</a></li>
+        </ul>
+    </div>
+    <div class="content">
+        <h1>Upload</h1>
+        <form action="/dashboard" method="post" enctype="multipart/form-data" class="upload-form">
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" placeholder="Enter name of the crop" required>
+            </div>
+            <div class="form-group">
+                <label for="region">Region:</label>
+                <input type="text" id="region" name="region" placeholder="Enter region of the crop" required>
+            </div>
+            <div class="form-group">
+                <label for="crop_type">Crop Type:</label>
+                <input type="text" id="crop_type" name="crop_type" placeholder="Enter crop type" required>
+            </div>
+            <div class="form-group">
+                <label for="number">Number:</label>
+                <input type="number" id="number" name="number" placeholder="Enter number of crops affected" required>
+            </div>
+            <div class="form-group">
+                <label for="problem">Problem:</label>
+                <input type="text" id="problem" name="problem" placeholder="Enter problem" required>
+            </div>
+            <div class="form-group">
+                <label for="image">Upload Image:</label>
+                <input type="file" id="image" name="image" accept="image/*" required>
+            </div>
+            <button type="submit">Process Image</button>
+        </form>
+        <!-- Chatbot Widget -->
+<div id="chatbot-widget">
+    <div id="chat-window"></div>
+    <input type="text" id="user-input" placeholder="Type your message here...">
+</div>
+
+    </div>    
+
+        <!-- Display processed images -->
+        {% if edges %}
+        <h2>Edge Detected Image</h2>
+        <img src="data:image/png;base64, {{ edges }}" alt="Edge Detected Image"><br><br>
+        {% endif %}
+
+        {% if segmented_image %}
+        <h2>Segmented Image</h2>
+        <img src="data:image/png;base64, {{ segmented_image }}" alt="Segmented Image"><br><br>
+        {% endif %}
+
+        <!-- Display image features -->
+        {% if features %}
+        <h2>Image Features</h2>
+        <ul>
+            <li>Mean Color: {{ features['Mean Color'] }}</li>
+            <li>Area: {{ features['Area'] }}</li>
+            <li>Perimeter: {{ features['Perimeter'] }}</li>
+            <li>Circularity: {{ features['Circularity'] }}</li>
+        </ul>
+        {% endif %}
+    </div>
+    <script>
+    // Function to send user input to the server and display responses
+function sendMessage() {
+    var userInput = document.getElementById('user-input').value;
+    var chatWindow = document.getElementById('chat-window');
+    
+    // Display user message in the chat window
+    chatWindow.innerHTML += '<div class="message user">' + userInput + '</div>';
+    
+    // Clear user input field
+    document.getElementById('user-input').value = '';
+    
+    // Send user input to the server for processing (using AJAX or WebSockets)
+    // Example:
+    // $.post('/chatbot', { user_input: userInput }, function(response) {
+    //     chatWindow.innerHTML += '<div class="message bot">' + response + '</div>';
+    // });
+}
+
+function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
+        }
+
+// Event listener for user input field
+document.getElementById('user-input').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        sendMessage();
+    }
+});
+
+</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<scrip src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
+    <!-- JavaScript imports and scripts -->
+
+</body>
+</html>
